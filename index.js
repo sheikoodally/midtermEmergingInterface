@@ -25,11 +25,11 @@ http.createServer(function (req, res) {
 
     let oSession = oSessionManager.start(req, res);
     let nServer = oSession.get("nServer");
-    if(!nServer || nServer < 0 || nServer > aUrls.length){
-        nServer = Math.floor(Math.random() *aUrls.length);
+    if(!nServer || nServer < 1 || nServer > aUrls.length){
+        nServer = Math.ceil(Math.random() *aUrls.length);
         oSession.set("nServer", nServer);
     }
-    return proxy.web(req, res, { target:  aUrls[nServer]});            
+    return proxy.web(req, res, { target:  aUrls[nServer - 1]});            
 
 }).listen(port, ()=>{
     console.log("Proxy listening on port " + port);
