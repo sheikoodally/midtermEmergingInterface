@@ -1,36 +1,34 @@
 import http from 'http';
 import httpProxy from 'http-proxy';
-import sessionManager from "session-manager";
+import express from "express";
+let app = express();
+import session from 'express-session';
 
-process.on('uncaughtException', function (err) {
-    // handle the error safely
-    console.log(err)
-});
-let port = process.env.PORT || parseInt(process.argv.pop()) || 3000;
-
-let proxy = httpProxy.createProxy({
+app.use(session({ secret: 'Secret5555', resave: false, saveUninitialized: true, }));
+// Define the port to run on
+app.set('port', process.env.PORT || parseInt(process.argv.pop()) || 8443);
+let apiProxy = httpProxy.createProxy({
     changeOrigin: true
 });
 
-let oSessionManager = sessionManager.create({engine: 'memory'});
 
 let aUrls = [
     "https://rhildred.github.io/",
     "https://rhildred.github.io/CP202Assignment5/"
 ];
 
-// Create http server that leverages reverse proxy instance
-// and proxy rules to proxy requests to different targets
-http.createServer(function (req, res) {
-
-    let oSession = oSessionManager.start(req, res);
-    let nServer = oSession.get("nServer");
+app.all("/*", function(req, res) {
+    let nServer = req.session.nServer;
     if(!nServer || nServer < 1 || nServer > aUrls.length){
         nServer = Math.ceil(Math.random() *aUrls.length);
-        oSession.set("nServer", nServer);
+        req.session.nServer =  nServer;
     }
-    return proxy.web(req, res, { target:  aUrls[nServer - 1]});            
+    apiProxy.web(req, res, {target: aUrls[nServer - 1]});
+});
 
-}).listen(port, ()=>{
-    console.log("Proxy listening on port " + port);
+// Create http server that leverages reverse proxy instance
+// and proxy rules to proxy requests to different targets
+http.createServer(app)
+.listen(app.get('port'), function () {
+  console.log('Example app listening on port ' + app.get('port') + "! Go to https://localhost:" + app.get('port') + "/")
 });
