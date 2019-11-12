@@ -26,8 +26,7 @@ app.all("/*", function(req, res) {
         nServer = Math.ceil(Math.random() *aUrls.length);
         req.session.nServer =  nServer;
     }
-    let sProxyUrl =  'https://' + req.get('host') + aUrls[nServer - 1];
-    console.log(sProxyUrl);
+    let sProxyUrl =  (req.headers["x-forwarded-proto"] || "http") + "://" + req.get('host') + aUrls[nServer - 1];
     apiProxy.web(req, res, {target:sProxyUrl});
 });
 
