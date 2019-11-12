@@ -16,8 +16,8 @@ app.use("/test2", express.static(__dirname + "/test2"));
 
 
 let aUrls = [
-    "https://api-rhildred.selab.ca/test1/",
-    "https://api-rhildred.selab.ca/test2/"
+    "/test1/",
+    "/test2/"
 ];
 
 app.all("/*", function(req, res) {
@@ -26,7 +26,9 @@ app.all("/*", function(req, res) {
         nServer = Math.ceil(Math.random() *aUrls.length);
         req.session.nServer =  nServer;
     }
-    apiProxy.web(req, res, {target: aUrls[nServer - 1]});
+    let sProxyUrl =  'https://' + req.get('host') + aUrls[nServer - 1];
+    console.log(sProxyUrl);
+    apiProxy.web(req, res, {target:sProxyUrl});
 });
 
 // Create http server that leverages reverse proxy instance
