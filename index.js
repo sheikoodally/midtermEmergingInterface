@@ -6,15 +6,18 @@ import session from 'express-session';
 
 app.use(session({ secret: 'Secret5555', resave: false, saveUninitialized: true, }));
 // Define the port to run on
-app.set('port', process.env.PORT || parseInt(process.argv.pop()) || 8443);
+app.set('port', process.env.PORT || parseInt(process.argv.pop()) || 8080);
 let apiProxy = httpProxy.createProxy({
     changeOrigin: true
 });
 
+app.use("/test1", express.static(__dirname + "/test1"));
+app.use("/test2", express.static(__dirname + "/test2"));
+
 
 let aUrls = [
-    "https://rhildred.github.io/test1/",
-    "https://rhildred.github.io/test2/"
+    "https://api-rhildred.selab.ca/test1/",
+    "https://api-rhildred.selab.ca/test2/"
 ];
 
 app.all("/*", function(req, res) {
