@@ -4,7 +4,6 @@ Survey
     .applyTheme("default");
 
 var json = {
-    title: "American History",
     "pages": [
         {
          "name": "page1",
